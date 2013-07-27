@@ -46,5 +46,5 @@ motif.o : motif.c agenda.h
 
 # regle de suppression des fichiers
 clean :
-	rm $(OBJ)
+	rm *.o $(EXEC)
 
