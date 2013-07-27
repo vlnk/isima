@@ -1,0 +1,5 @@
+
+# Affichage de la notation parenthesee :
+(a(b,c,,d))
+
+Ecriture parenthesee incorrecte !

@@ -1,0 +1,9 @@
+Pile a inverser :
+a
+
+Etat de la file :
+a
+
+Pile inversee :
+a
+

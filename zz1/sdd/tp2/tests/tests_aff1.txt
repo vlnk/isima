@@ -1,0 +1,10 @@
+
+# Affichage de la notation parenthesee :
+(E)
+
+
+# Affichage des mots du dictionnaire :
+E
+
+# Liberation de l'arbre :
+free(E)

@@ -1,0 +1,13 @@
+
+# Affichage de la notation parenthesee :
+()
+
+
+# Affichage des mots du dictionnaire :
+rieN
+
+# Liberation de l'arbre :
+free(N)
+free(e)
+free(i)
+free(r)

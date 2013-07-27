@@ -1,0 +1,18 @@
+Pile a inverser :
+d
+c
+b
+a
+
+Etat de la file :
+a
+b
+c
+d
+
+Pile inversee :
+a
+b
+c
+d
+

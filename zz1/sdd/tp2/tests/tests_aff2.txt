@@ -1,0 +1,34 @@
+
+# Affichage de la notation parenthesee :
+(c(h(a(n(c(E)s,t(E(E,S)o(n(S))))R(m(E))T))))
+
+
+# Affichage des mots du dictionnaire :
+chancE
+chantE
+chantEE
+chantES
+chantonS
+chaR
+chaRmE
+chaT
+
+# Liberation de l'arbre :
+free(E)
+free(S)
+free(E)
+free(S)
+free(n)
+free(o)
+free(E)
+free(t)
+free(s)
+free(c)
+free(E)
+free(m)
+free(T)
+free(R)
+free(n)
+free(a)
+free(h)
+free(c)

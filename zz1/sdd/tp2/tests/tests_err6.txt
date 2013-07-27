@@ -1,0 +1,16 @@
+
+# Affichage de la notation parenthesee :
+()
+
+L'argument 'arbre7' n'est pas un mot valide !
+L'argument '@rbre' n'est pas un mot valide !
+L'argument 'arbré' n'est pas un mot valide !
+
+# Affichage des mots du dictionnaire :
+rieN
+
+# Liberation de l'arbre :
+free(N)
+free(e)
+free(i)
+free(r)

@@ -1,0 +1,81 @@
+/* TITRE : TP7
+ * FICHIER : tp73.c
+ *
+ * DEUXIEME PARTIE -> Production de documentation.
+ *
+ * AUTEUR : Valentin Laurent
+ * DATE : 9/12/12
+ */
+
+/* INCLUDE */
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+/* DEFINE */
+#define TMAX 1000
+
+/* STRUCTURE */
+typedef struct cellule
+{
+    char            * ligne;
+    struct cellule  * suiv;
+} cellule_t;
+
+/* PROTOTYPES */
+void lecture(cellule_t ** ftete, cellule_t * ptete,char * nom);
+void affiche(cellule_t * ptete);
+void liberation(cellule_t ** ptete);
+void ajout(cellule_t ** ftete);
+void ecriture(cellule_t * ptete, char * nom);
+
+/* PROGRAMME PRINCIPALE
+ *
+ * Lit un fichier source *.c et copie les lignes "#", les prototypes de fonctions et les commentaires du fichier source dans un autre fichier.
+ *
+ * ENTRÉE : Rien.
+ * SORTIE : Rien.
+ */
+
+/* SOUS PROGRAMMES */
+
+/* FONCTION : (void) lecture
+ *
+ * Lecture du fichier et copie des lignes dans une cellule de la liste chainée.
+ *
+ * ENTRÉE : (cellule_t **) ftete : un pointeur de pointeur sur la dernière cellule (vide) de la liste chainée.
+ * SORTIE : Rien.
+ */
+
+/* FONCTION : (void) ecriture
+ *
+ * Ecriture du fichier d'en-tête par lecture des lignes de chaque cellule.
+ *
+ * ENTRÉE : (cellule_t *) ptete : un pointeur de pointeur sur la première cellule de la liste chainée.
+ * SORTIE : Rien.
+ */
+
+/* FONCTION : (void) ajout
+ *
+ * Ajout d'une cellule (struct) initialisée (à NULL) en fin de la liste chainée.
+ *
+ * ENTRÉE : (cellule_t **) ftete : un pointeur de pointeur sur la dernière cellule de la liste chainée.
+ * SORTIE : Rien.
+ */
+
+/* FONCTION : (void) affiche
+ *
+ * Affichage des cellules de la liste chainée.
+ *
+ * ENTRÉE : (cellule_t *) ftete : un pointeur sur la dernière cellule (vide) de la liste chainée.
+ * SORTIE : Rien.
+ */
+
+/* FONCTION : (void) liberation
+ *
+ * Libération de la mémoire allouée pour la création de la liste chainée.
+ *
+ * ENTRÉE : (cellule_t **) ftete : un pointeur de pointeur sur la première cellule de la liste chainée.
+ * SORTIE : Rien.
+ */
+

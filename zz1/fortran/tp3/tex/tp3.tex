@@ -1,0 +1,340 @@
+\documentclass{report}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[francais]{babel}
+\usepackage{amssymb}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+\title{Compte rendu du TP3 de Fortran}
+\author{\textsc{Laurent} Valentin}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\setcounter{chapter}{1}
+\newpage
+\section{Objectifs de TP}\label{objectifs}
+L'objectif du TP est de calculer les valeurs propres d'une matrice quelconque à l'aide de la methode QR.
+On part de la matrice $A = A_{0}$ et on écrit sa factorisation $QR$ par la methode de Householder, on a alors
+$A_{0} = Q_{0} R_{0}$ et on calcule $A_{1} = R_{0} Q_{0}$, on factorise alors $A_{1}$ et on itère cette methode.
+
+Ainsi a l'itération $k$ on a $A_{k} = R_{k}Q{k} = Q_{k}^{t}A_{k-1}Q_{k}$
+
+On sait (par théorème) que toute matrice admet une factorisation $QR$ selon la methode de Householder, de plus
+(encore par théorème) on peut montrer que les éléments diagonnaux des matrices $A_{k}$ convergent vers les valeurs
+propres de la matrices $A$ avec les éléments non diagonaux qui convergent vers $0$.
+
+Cette methode, très pratique pour calculer les valeurs propres d'une matrice quelconque (jusqu'à l'ordre 25 pour un coût
+avantageux) sera traduite en fortran dans ce TP.
+\section{Algorithmes importants}\label{algo}
+
+\begin{algorithm}
+\caption{Methode QR}
+\begin{algorithmic} 
+\REQUIRE la matrice $A$
+\ENSURE le spectre de $A$
+\STATE $Q \leftarrow I $
+\WHILE{$max\{a_{i,j}\}_{i \neq j} \geq \epsilon $}
+\FOR{$k = 1 \to n-1$}
+\STATE $s \leftarrow \sqrt{\displaystyle\sum^{n}_{j=k}{a_{j,k}^2}}$
+\STATE $r \leftarrow \sqrt{2s(s + \| a_{k,k} \|)}$
+\STATE $w^{k} \leftarrow v^{k}/{r}$
+\STATE $H_{i,j} \leftarrow \delta_{i,j} - 2 \omega_{i}^{k} \omega_{j}^{k}$
+\STATE $Q \leftarrow Q H$
+\STATE $A \leftarrow H A$
+\ENDFOR
+\STATE $A \leftarrow A Q$
+\ENDWHILE
+\end{algorithmic}
+\end{algorithm}
+
+\newpage
+\section{Listing en Fortran}\label{fortran}
+\subsection{Programme principal : val\_p.f90}
+Le programme affiche le menu, effectue directement le calcul des valeurs propres avec la matrice QR à partir de
+la matrice saisie par l'utilisateur. Ce programme appelle les modules affichage.f90 et algo.f90.
+
+\begin{small}
+\begin{verbatim}
+!------------------------------------------------------------------------------
+! TP3 : LES Méthodes itératives QR
+! Auteur : Valentin Laurent (ZZ1,G1)
+! Date : 11/12/12
+! Compilation : gfortran algo.f90 affichage.f90 val_p.f90 -o val_p
+! Fichiers de tests : matrice41.txt, matrice42.txt et matrice9.txt
+!------------------------------------------------------------------------------
+
+PROGRAM val_p
+
+USE algo
+USE affichage
+
+IMPLICIT NONE
+
+real(8),dimension(:,:),allocatable      :: A        !la matrice A
+real(8),dimension(:), allocatable       :: spA      !le spectre de A
+integer                                 :: n        !le rang de A
+integer                                 :: i        !variable de boucle
+integer                                 :: iter     !nombre d'itération
+integer                                 :: iter_max !nombre d'itération max
+real(8)                                 :: eps      !ce cher epsilon
+character (len=20)                      :: nomfich  !nom du fichier
+
+!affichage menu
+print *,"------------------- tp3 : la methode QR -------------------"
+print *,"Calcule le spectre d'une matrice donnée selon la methode QR"
+print *,"-----------------------------------------------------------"
+
+
+! Lecture du nom du fichier de donnees
+print *,' Entrez le nom du fichier de donnees : '
+read *,nomfich
+
+!initialisation
+open(1,file=nomfich,status="old",action="read")
+read(1,*) n
+allocate(A(n,n),spA(n))
+
+DO i=1,n
+    read(1,*) A(i,1:n)
+END DO
+close(1)
+
+print *,"Veuillez saisir la valeur d'epsilon : "
+read *,eps
+
+print *,"Veuillez saisir le nombre d'iterations maximal : "
+read *,iter_max
+
+call afficheMat(A,n)
+call QR(A,eps,iter_max,iter)
+
+print *,"Nombre d'iterations : ",iter
+
+!call afficheMat(A)
+DO i=1,n
+    spA(i) = A(i,i)
+END DO
+
+print *,"Le spectre de A : "
+call afficheVect(spA,n)
+
+print *,"-------------------------------------------------------"
+
+END PROGRAM val_p
+!fin du TP3\end{verbatim}
+\end{small}
+
+\newpage
+\subsection{Module d'affichage : affichage.f90}
+Le programme d'affichage provient du TP1, j'ai crée un module que je peux réutiliser
+dans chaque programme afin d'afficher un vecteur ou une matrice. Ce module a déjà été
+utilisé dans le TP2 sous le même nom.
+
+\subsection{Module : algo.f90}
+Ce module effectue l'algorithme de calcul des valeurs propres selon la methode QR décrite 
+dans la partie \ref{algo}. On alloue dans ce module les matrices Q($n*n$), H($n*n$) et le 
+vecteur v($n$) nécessaires à l'execution de l'algorithme. À la fin, on retourne la matrice A.
+
+\begin{small}
+\begin{verbatim}
+MODULE algo
+CONTAINS
+
+SUBROUTINE QR(A,eps,iter_max,iter)
+IMPLICIT NONE
+
+real(8),dimension(:,:),intent(inout)    :: A        !matrice A
+real(8),dimension(:),allocatable        :: v        !vecteur de calcul de Householder
+real(8),dimension(:,:),allocatable      :: Q        !matrice de factorisation QR
+real(8),dimension(:,:),allocatable      :: H        !matrice de Householder
+real(8)                                 :: s        !calcul de la norme de A
+real(8)                                 :: a_max    !composante maximale (non diag) de A
+real(8),intent(in)                      :: eps      !epsilon
+
+integer, intent(in)                     :: iter_max !iteration maximale
+integer, intent(inout)                  :: iter     !compteur d'iterations
+integer                                 :: n        !rang de A
+integer                                 :: test     !valeur de test (pour l'iteration)
+integer                                 :: i,j,k    !variables de boucle
+integer                                 :: kp,km    !valeur de k+1 et k-1
+
+!initialisation
+n = size(A,dim = 1)
+iter = 1
+test = 0
+
+!allocations
+allocate(Q(n,n),H(n,n),v(n))
+
+DO WHILE ((test == 0) .and. (iter < iter_max))
+
+    iter = iter +1
+    !initialisation de Q
+    Q = 0
+    DO i=1,n
+        Q(i,i) = 1.d0
+    END DO
+
+    DO k=1,n-1
+
+        !calcul de s
+        s = 0.d0
+        DO j=k,n
+            s = s + A(j,k)**2
+        END DO
+        s = sqrt(s)
+
+        !calcul de v
+        kp = k+1
+        km = k-1
+        v(1:km) = 0
+        v(k) = A(k,k)+A(k,k)/abs(A(k,k))*s
+        v(kp:n) = A(kp:n,k)
+
+        !calcul de r (-> s) et w (-> v)
+        s = sqrt(2*s*(s+abs(A(k,k))))
+        v = v/s
+
+        !calcul de H
+        DO i=1,n
+            DO j=1,n
+                IF (i == j) THEN
+                    H(i,j) = 1-2*v(i)*v(j)
+                ELSE
+                    H(i,j) = -2*v(i)*v(j)
+                END IF
+            END DO
+        END DO
+
+        !calcul de Q et A
+        Q = matmul(Q,H)
+        A = matmul(H,A)
+
+    END DO
+
+    !mise à jour de A
+    A = matmul(A,Q)
+
+    !test sur les elements non diagonaux
+    a_max = 0.d0
+    DO i=1,n
+        DO j=1,n
+            IF (a_max < A(i,j)) THEN
+                a_max = A(i,j)
+            END IF
+        END DO
+    END DO
+
+    IF (a_max < eps) THEN
+        test = 1
+    END IF
+
+END DO
+
+END SUBROUTINE QR
+
+END MODULE algo
+\end{verbatim}
+\end{small}
+
+\newpage
+\section{Jeux d'essais}\label{essai}
+On utilisera pour les essais une valeur de $\epsilon = 1.d-12$ et un nombre
+d'itérations maximales égal à $100$.
+\subsubsection{matrice41.txt}
+$A=\left[\begin{array}{rrrr}
+4 & 1 & 0 \\
+1 & 4 & 1 \\
+0 & 1 & 4
+\end{array}\right]$
+
+\begin{small}
+\begin{verbatim}
+ ------------------- tp3 : la methode QR -------------------
+ Calcule le spectre d'une matrice donnée selon la methode QR
+ -----------------------------------------------------------
+  Entrez le nom du fichier de donnees : 
+matrice41.txt
+ Veuillez saisir la valeur d'epsilon : 
+1.d-12
+ Veuillez saisir le nombre d'iterations maximal : 
+100
+ La matrice A :
+   4.0000000000000000        1.0000000000000000        0.0000000000000000
+   1.0000000000000000        4.0000000000000000        1.0000000000000000
+   0.0000000000000000        1.0000000000000000        4.0000000000000000
+ Nombre d'iterations :          100
+ Le spectre de A : 
+   5.4142135623731233     
+   3.9999999999999987     
+   2.5857864376269060     
+ -------------------------------------------------------
+\end{verbatim}
+\end{small}
+
+\subsubsection{matrice42.txt}
+$A=\left[\begin{array}{rrrr}
+1 & 1 & 2 \\
+1 & 2 & 1 \\
+0 & 1 & 3
+\end{array}\right]$
+
+\begin{small}
+\begin{verbatim}
+ Nombre d'iterations :          100
+ Le spectre de A : 
+   4.0000000000000018     
+   1.0101859644672808     
+   0.98981403553271896 
+\end{verbatim}
+\end{small}
+
+\subsubsection{matrice9.txt}
+$A=\left[\begin{array}{rrrrrrrrr}
+ 4 & -1 &  0 & -1 &  0 &  0 &  0 &  0 &  0 \\
+-1 &  4 & -1 &  0 & -1 &  0 &  0 &  0 &  0 \\
+ 0 & -1 &  4 &  0 &  0 & -1 &  0 &  0 &  0 \\
+-1 &  0 &  0 &  4 & -1 &  0 & -1 &  0 &  0 \\
+ 0 & -1 &  0 & -1 &  4 & -1 &  0 & -1 &  0 \\
+ 0 &  0 & -1 &  0 & -1 &  4 &  0 &  0 & -1 \\
+ 0 &  0 &  0 & -1 &  0 &  0 &  4 & -1 &  0 \\
+ 0 &  0 &  0 &  0 & -1 &  0 & -1 &  4 & -1 \\
+ 0 &  0 &  0 &  0 &  0 & -1 &  0 & -1 &  4
+\end{array}\right]$
+
+\begin{small}
+\begin{verbatim}
+ Nombre d'iterations :          100
+ Le spectre de A : 
+   6.8284271247461996     
+   5.4142135623731260     
+   4.0001260626022601     
+   5.4140874997708579     
+   3.9999999999999902     
+   3.9999998434059796     
+   2.5857865942209264     
+   2.5857864376269153     
+   1.1715728752538108 
+\end{verbatim}
+\end{small}
+
+\newpage
+\section{Conclusion}\label{conclusion}
+Ce TP permet le calcul des valeurs propres pour une matrice quelconque. Grâce à cette methode
+on obtient cependant des valeurs approchées qui dépendent fortement du nombre d'itérations maximal
+et de la précision souhaitée (ici on a pris $\epsilon{} = 1.d-12$ pour $100$ itérations.
+
+Dans l'écriture du TP en fortran j'ai préféré ne pas utiliser trop de variables de stockage ($r$ et $w$) en
+réecrivant les variables $v$ et $s$ au cours de l'alogorithme. Ceci permet un gain de place en mémoire (faible ??)
+au détriment de la lisibilité du programme. Le fortran se révèle (encore une fois) très utile pour transcrire
+ces algorithmes d'analyse numérique.
+
+Enfin, comme pour le TP précédent j'ai rencontré des problèmes pour l'affichage des matrices dans le terminal.
+J'ai résolu le problème en écrivant les matrices directement en \LaTeX{}.
+\end{document}

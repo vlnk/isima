@@ -1,0 +1,58 @@
+LIBELLE SUPPRIMEE : Liberte   
+
+ANNEE : 2013
+SEMAINE : 42
+JOUR : 1
+HEURE : 08
+LIBELLE : Calcul    
+
+ANNEE : 2013
+SEMAINE : 42
+JOUR : 1
+HEURE : 10
+LIBELLE : Automates 
+
+ANNEE : 2013
+SEMAINE : 42
+JOUR : 1
+HEURE : 13
+LIBELLE : Proba     
+
+ANNEE : 2013
+SEMAINE : 43
+JOUR : 2
+HEURE : 08
+LIBELLE : TP de SDD 
+
+ANNEE : 2013
+SEMAINE : 43
+JOUR : 2
+HEURE : 10
+LIBELLE : Systemes  
+
+ANNEE : 2013
+SEMAINE : 44
+JOUR : 3
+HEURE : 08
+LIBELLE : TP de BDD 
+
+ANNEE : 2013
+SEMAINE : 44
+JOUR : 3
+HEURE : 13
+LIBELLE : Anglais   
+
+ANNEE : 2013
+SEMAINE : 45
+JOUR : 4
+HEURE : 08
+LIBELLE : Circuits  
+
+ANNEE : 2014
+SEMAINE : 03
+JOUR : 5
+HEURE : 15
+LIBELLE : TP de phys
+
+--------------------------------------------
+Fin du programme

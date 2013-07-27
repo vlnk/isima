@@ -1,0 +1,20 @@
+\select@language {french}
+\contentsline {section}{\numberline {1.1}Objectifs de TP}{2}
+\contentsline {section}{\numberline {1.2}Algorithmes importants}{2}
+\contentsline {subsubsection}{La methode de Jacobi}{2}
+\contentsline {subsubsection}{La methode de Gauss-Seidel}{3}
+\contentsline {subsubsection}{La methode de Relaxation}{3}
+\contentsline {section}{\numberline {1.3}Listing en Fortran}{4}
+\contentsline {subsection}{\numberline {1.3.1}Programme principal : syslin.f90}{4}
+\contentsline {subsection}{\numberline {1.3.2}Module : methode.f90}{7}
+\contentsline {subsection}{\numberline {1.3.3}Module d'affichage : affichage.f90}{9}
+\contentsline {section}{\numberline {1.4}Jeux d'essais}{11}
+\contentsline {subsection}{\numberline {1.4.1}Matrice de taille 4*4 (matrice4.txt)}{11}
+\contentsline {subsubsection}{Methode de Jacobi}{11}
+\contentsline {subsubsection}{Methode de Gauss-Seidel}{11}
+\contentsline {subsubsection}{Methode de Relaxation}{11}
+\contentsline {subsection}{\numberline {1.4.2}Matrice de taille 9*9 (matrice9.txt)}{16}
+\contentsline {subsubsection}{Methode de Jacobi}{16}
+\contentsline {subsubsection}{Methode de Gauss-Seidel}{16}
+\contentsline {subsubsection}{Methode de relaxation}{17}
+\contentsline {section}{\numberline {1.5}Conclusions}{23}

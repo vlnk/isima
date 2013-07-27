@@ -1,0 +1,498 @@
+Chloé Obrian
+Marshall Flinkman                                                        
+
+                            
+
+
+                            
+
+
+
+
+                             TP0 STRUCTURES DE DONNEES
+                             -------------------------
+
+
+
+
+Objet du TP
+-----------
+Insertions et suppressions dans les chaines de caractères.
+
+
+
+Structure de données
+--------------------
+Les chaines de caractères sont des listes contigües avec accès indirect en
+tête terminées par un caractère null ('\0').
+
+    -----      ----------------------------------------------------
+ a0 |  -|----->|                                             |null|
+    -----      ----------------------------------------------------
+
+
+
+Organisation du code source
+---------------------------
+chainCar.h  : fichier d'entête 
+chainCar.c  : Programme principal
+inserCarI.c : fonctions inserCarI
+                        inserChainI
+                        decalDroite
+suppCarI.c  : fonctions suppCarI
+                        decalgauche
+                        suppOccur
+
+
+Codes sources
+-------------
+
+
+             /**********************************************************/
+             /*Chloé Obrian-Marshall Flinkman                     2018 */
+             /*--------------------------------------------------------*/
+             /*                        chainCar.h                      */
+             /*          Traitement de chaines de caractères           */
+             /*                         EN TETE                        */
+             /**********************************************************/
+
+#ifndef CHAIN__CAR__H
+#define CHAIN__CAR__H
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+/***************************************/
+/* mettre les typedef ici qd il y en a */
+/***************************************/
+
+/**********************************************************/
+/* décalage à droite général                              */
+/**********************************************************/
+void decalDroite(char * p, char * premier, char * dernier, int saut);
+
+/**********************************************************/
+/* insertion d'un caractère en ième position d'une chaîne */
+/**********************************************************/
+void inserCarI (char * p, int i, char c);
+
+/**********************************************************/
+/* insertion de caractères en ième position d'une chaîne  */
+/**********************************************************/
+void inserChainI (char * p, int i, char * c);
+
+/************************************************************/
+/* suppression d'un caractère en ième position d'une chaîne */
+/************************************************************/
+void suppCarI (char * p, int i);
+
+/**********************************************************/
+/* décalage à gauche d'une chaine terminée par \0         */
+/**********************************************************/
+void decalGauche (char *premier, int saut);
+
+/************************************************************************/
+/* Suppression de toutes les occurrences d'un caractère dans une chaine */
+/************************************************************************/
+void suppOccur(char * chaine, char c);
+
+#endif
+
+             /**********************************************************/
+             /*Chloé Obrian-Marshall Flinkman                     2018 */
+             /*--------------------------------------------------------*/
+             /*                        chainCar.c                      */
+             /*          Traitement de chaines de caractères           */
+             /*                   PROGRAMME PRINCIPAL                  */
+             /**********************************************************/
+
+
+#include "chainCar.h"
+
+void main (int argc, char ** argv)
+{                          /*************************************/
+  char text[80],           /* texte à traiter                   */
+       type,               /* type de modidification à faire    */
+       c[20],              /* caractères à insérer ou supprimer */
+       ret;                /* pour la lecture de la fin de ligne*/
+  int i;                   /* position du caractère             */
+  FILE * fic;              /* fichier en entrée                 */
+                           /*************************************/
+
+  if (argc >0 && (fic=fopen(argv[1],"r")))
+    {
+             /**********************************************************/
+             /* IMPORTANT : ceci n'est pas un menu mais les données    */ 
+             /* sont lues dans un fichier ainsi que le travail à faire */
+             /**********************************************************/
+      while (!feof(fic))
+	{  
+	  fgets(text, 80, fic);
+	  *(text+strlen(text)-1)='\0';
+	  printf("%s\n",text);
+	  fscanf (fic, "%c",&type);
+	  while (!feof(fic) && type != 'n')
+	    {
+	      switch (type)
+		{
+		case 'i' :   /* insertion d'un seul caractère */
+		  { 
+		    fscanf(fic,"%s%d\n",c,&i);
+		    printf("on insere %s en position %d\n", c, i);
+		    inserCarI (text, i-1, c[0]);
+		    printf ("résultat %s\n\n", text);
+		    break;
+		  }
+		case 's':    /* suppression d'un seul caractère */
+		  {
+		    fscanf(fic,"%d\n",&i);
+		    suppCarI(text,i-1);
+		    printf("on supprime en position %d\n", i);
+		    printf ("résultat %s\n\n", text);
+		    break;      
+		  }
+		case 'I' :   /* insertion d'une sous-chaine */
+		  {
+		    fscanf(fic,"%s%d\n",c, &i);
+		    inserChainI (text, i-1, c);
+		    printf("on insere %s en position %d\n", c, i);
+		    printf ("résultat %s\n\n", text);
+		    break;
+		  }
+		case 'o' :   /* suppression de toutes les occurrences */
+		  {
+		    fscanf(fic,"%s\n", c);
+		    suppOccur (text,c[0]);
+		    printf("on supprime les occurrences de %s \n", c);
+		    printf ("résultat %s\n\n", text);
+		    break;
+		  }
+		}
+	      fscanf (fic, "%c",&type);
+	    }
+	  fscanf(fic,"%c", &ret); 
+	}
+    }
+}
+
+             /**********************************************************/
+             /*Chloé Obrian-Marshall Flinkman                     2018 */
+             /*--------------------------------------------------------*/
+             /*                    inserCarI.c                         */
+             /*          Traitement de chaines de caractères           */
+             /*                 FONCTIONS D'INSERTION                  */
+             /**********************************************************/        
+#include "chainCar.h" 
+
+/************************************************************/
+/* insertion d'un caractère en ième position d'une chaîne   */
+/*                                                          */
+/* principe :                                               */
+/* Décalages à droite de la fin jusqu'à la ième position    */     
+/*                                                          */
+/* Lexique :                                                */
+/* p : chaîne de caractère                                  */
+/* i : position d'insertion                                 */
+/* c : caractère à insérer                                  */
+/************************************************************/
+void inserCarI (char * p, int i, char c)
+{
+  decalDroite(p, p+strlen(p), p+i, 1);
+  *(p+i)=c;
+}
+/************************************************************/
+/* insertion d'une sous chaine en ième position d'une chaîne*/
+/*                                                          */
+/* principe :                                               */
+/* Décalage à droite ègal à la longueur de la sous chaine   */     
+/*                                                          */
+/* Lexique :                                                */
+/* p : chaîne de caractère                                  */
+/* i : position d'insertion                                 */
+/* c : chaine à insérer                                     */
+/************************************************************/
+void inserChainI (char * p, int i, char * c)
+{
+  int l=strlen(c);
+  decalDroite(p, p+strlen(p), p+i,l+1);
+  strncpy (p+i,c,l);
+  *(p+i+l)=' ';
+}
+/*************************************************************/
+/* décalage à droite général                                 */
+/*                                                           */
+/* principe :                                                */
+/* transferts de caractères de saut positions vers la droite */     
+/*                                                           */
+/* Lexique :                                                 */
+/* p : chaine de caractère où l'on décale                    */
+/* premier : adresse d'arrivée du 1er décalage (ici à la fin)*/
+/* dernier : adresse d'arrivée du dernier décalage           */
+/* saut : nombre de caractères entre départ et arrivée       */
+/*************************************************************/
+
+void decalDroite(char * p, char * premier, char * dernier, int saut)
+{
+  char * k;                              /* indice de boucle */
+  for (k=premier; k>=dernier; k--)
+      *(k+saut)=*k;
+}
+
+
+             /**********************************************************/
+             /*Chloé Obrian-Marshall Flinkman                     2018 */
+             /*--------------------------------------------------------*/
+             /*                     suppCarI.c                         */
+             /*          Traitement de chaines de caractères           */
+             /*                FONCTIONS DE SUPPRESSION                */
+             /**********************************************************/  
+
+#include "chainCar.h"
+
+/************************************************************/
+/* suppression d'un caractère en ième position d'une chaîne */
+/*                                                          */
+/* principe :                                               */
+/* Décalage à gauhe à partir de la ième position            */
+/*                                                          */
+/* Lexique :                                                */
+/* p : chaîne de caractère                                  */
+/* i : position d'insertion                                 */
+/* c : caractère à insérer                                  */
+/************************************************************/
+void suppCarI (char * p, int i)
+{
+  decalGauche(p+i, 1); 
+}
+
+/************************************************************/
+/* décalage à gauche d'une chaine terminée pas \0           */
+/*                                                          */
+/* principe :                                               */
+/* Transfert des caractères de saut positions vers la gauche*/     
+/*                                                          */
+/* Lexique :                                                */
+/* premier : adresse d'arrivée du 1er décalage              */
+/* saut : nombre de caractères entre départ et arrivée      */
+/************************************************************/
+
+void decalGauche (char *premier, int saut)
+{
+  while(*premier!='\0')
+    {
+    *premier=*(premier+saut);
+    premier++; 
+    }
+}
+
+/************************************************************************/
+/* Suppression de toutes les occurrences d'un caractère dans une chaine */
+/*                                                                      */
+/* principe :                                                           */
+/* Décalage à gauche à chaque rencontre du caractère à supprimer        */     
+/*                                                                      */
+/* Lexique :                                                            */
+/*                                                                      */
+/* chaine : chaine de caractère à traiter                               */
+/* c      : caractère à supprimer                                       */
+/************************************************************************/
+
+void suppOccur(char * chaine, char c)
+{
+  char * pos=chaine;
+  while (*pos !='\0')
+    {
+      if (*pos == c)
+	decalGauche( pos, 1);
+      else pos++;
+    }
+}
+
+
+Makefile
+--------
+CC=gcc
+OPT= -c -ansi -pedantic -Wall
+chainCar : chainCar.o inserCarI.o suppCarI.o
+	$(CC) -o chainCar chainCar.o inserCarI.o suppCarI.o
+inserCarI.o : inserCarI.c chainCar.h
+	$(CC) $(OPT) inserCarI.c
+suppCarI.o : suppCarI.c chainCar.c
+	$(CC) $(OPT) suppCarI.c
+chainCar.o : chainCar.c chainCar.h
+	$(CC) $(OPT) chainCar.c
+clair :
+	rm chainCar.o inserCarI.o suppCarI.o
+propre : clair
+	rm chainCar
+
+
+                                 JEUX DE TESTS
+                                 ------------- 
+Liste des cas testés
+---------------------
+4 fichiers de test :
+
+insertionCaractere.txt
+Cas d'insertion : au milieu, en tête, en fin, dans une liste à un
+élément.
+
+suppressionCaractere.txt
+Cas de suppression : au milieu, en tête, en fin, dans une liste à un
+élément.
+
+insertionChaine.txt
+Cas d'insertion d'une sous chaine : au milieu, en tête, en fin.
+
+suppressionOccurrences.txt
+Cas de suppression de toutes les occurrences : au milieu, en tête, en fin,
+la liste devient vide.
+
+Fichiers en entrée
+------------------
+/home/Chloé >cat insertionCaractere.txt 
+il fat beau
+ii 6
+n
+e chat
+il 1
+n
+l'elephant
+ie 11
+n
+a
+il 1
+im 3
+ia 4
+
+/home/Chloé >cat suppressionCaractere.txt
+enourme
+s 4
+n
+lénorme
+s 1
+s 1
+s 1
+n
+énormez
+s 7
+n
+a
+s 1
+
+/home/Chloé >cat insertionChaine.txt
+le lion
+Igros 4
+n
+méchant 
+Igrand 1
+Iloup  15
+Inoir  20
+/home/Chloé >cat suppressionOccurrences.txt
+les chaussettes de la duchesse
+os
+n
+aaaaaaaarrrrrrrrhhhhhh
+oa
+oh
+or
+
+/home/Chloé >cat enchainement.txt
+je n ai pas peur des ordonateurs ni des exterminateurs
+s 25
+ii 25
+Ivirus 41
+
+EXECUTION
+---------
+/home/Chloé >chainCar insertionCaractere.txt
+il fat beau
+on insere i en position 6
+résultat il fait beau
+
+e chat
+on insere l en position 1
+résultat le chat
+
+l'elephant
+on insere e en position 11
+résultat l'elephante
+
+a
+on insere l en position 1
+résultat la
+
+on insere m en position 3
+résultat lam
+
+on insere a en position 4
+résultat lama
+
+home/Chloé >chainCar suppressionCaractere.txt  
+enourme
+on supprime en position 4
+résultat enorme
+
+l norme
+on supprime en position 1
+résultat  norme
+
+on supprime en position 1
+r sultat norme
+
+on supprime en position 1
+résultat orme
+
+ normez
+on supprime en position 7
+résultat  norme
+
+a
+on supprime en position 1
+résultat 
+
+/home/Chloé >chainCar insertionChaine.txt
+le lion
+on insere gros en position 4
+résultat le gros lion
+
+méchant 
+on insere grand en position 1
+résultat grand m chant 
+
+on insere loup en position 15
+résultat grand m chant loup 
+
+on insere noir en position 20
+résultat grand m chant loup noir 
+
+/home/Chloé >chainCar suppressionOccurrences.txt
+les chaussettes de la duchesse
+on supprime les occurrences de s 
+résultat le chauette de la duchee
+
+aaaaaaaarrrrrrrrhhhhhh
+on supprime les occurrences de a 
+résultat rrrrrrrrhhhhhh
+
+on supprime les occurrences de h 
+résultat rrrrrrrr
+
+on supprime les occurrences de r 
+résultat 
+
+home/Chloé >chainCar enchainement.txt          
+je n ai pas peur des ordonateurs ni des exterminateurs
+on supprime en position 25
+résultat je n ai pas peur des ordnateurs ni des exterminateurs
+
+on insere i en position 25
+résultat je n ai pas peur des ordinateurs ni des exterminateurs
+
+on insere virus en position 41
+résultat je n ai pas peur des ordinateurs ni des virus exterminateurs
+
+ 
+
+

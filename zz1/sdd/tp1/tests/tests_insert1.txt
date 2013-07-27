@@ -1,0 +1,3 @@
+Ouverture du fichier de lecture impossible !
+--------------------------------------------
+Fin du programme

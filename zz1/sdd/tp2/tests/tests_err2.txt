@@ -1,0 +1,5 @@
+
+# Affichage de la notation parenthesee :
+(()((()R))
+
+Ecriture parenthesee incorrecte !

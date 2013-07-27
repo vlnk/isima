@@ -1,0 +1,14 @@
+==31682== Memcheck, a memory error detector
+==31682== Copyright (C) 2002-2010, and GNU GPL'd, by Julian Seward et al.
+==31682== Using Valgrind-3.6.0 and LibVEX; rerun with -h for copyright info
+==31682== Command: ./inversion/inversion dcba
+==31682== 
+==31682== 
+==31682== HEAP SUMMARY:
+==31682==     in use at exit: 0 bytes in 0 blocks
+==31682==   total heap usage: 4 allocs, 4 frees, 240 bytes allocated
+==31682== 
+==31682== All heap blocks were freed -- no leaks are possible
+==31682== 
+==31682== For counts of detected and suppressed errors, rerun with: -v
+==31682== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 6 from 6)
